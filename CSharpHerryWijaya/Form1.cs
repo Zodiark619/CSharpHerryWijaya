@@ -55,7 +55,7 @@ namespace CSharpHerryWijaya
                     }
                     else
                     {
-                        cb.Text = currentList[index] + " " + result.Item2 + "%";
+                        cb.Text = currentList[index] + " +" + result.Item2 + "%";
 
                     }
                     cb.BackColor = Color.FromName(result.Item1);
