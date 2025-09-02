@@ -1,0 +1,102 @@
+﻿@model ResearchViewModel
+
+
+<h2>Research</h2>
+
+<table id="researchTable" class="display">
+    <thead>
+        <tr>
+            <th>Research Name</th>
+            <th>Requirements</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+      
+            
+            @foreach(var item in Model.Research)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>
+                    @foreach(var ii in item.Requirements){
+
+                                var invItem = Model.InventoryItem.FirstOrDefault(x => x.ItemId == ii.ItemId);
+                                var currentQty = invItem?.Quantity ?? 0;  // if null, quantity = 0
+
+                                <p>@ii.Item.Name (@currentQty / @ii.Quantity)</p>
+                    }
+                        </td>
+                        <td>
+                    <button class="btn btn-sm btn-success research-btn"
+                            data-researchid="@item.Id"
+                            data-duration="@item.Duration.TotalSeconds">
+                        Research
+                    </button>
+                        </td>
+                </tr>
+            }
+
+            @* foreach (var item in inv.Items)
+            {
+                <tr>
+                    <td>@item.Item.Name</td>
+                    <td id="qty-@item.Id">@item.Quantity</td>
+                    <td>
+                        <button class="btn btn-sm btn-success increase-btn"
+                                data-inventoryitemid="@item.Id">
+                            +50
+                        </button>
+                    </td>
+                </tr>
+            } *@
+        
+    </tbody>
+</table>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#researchTable').DataTable();
+        });
+
+                $(".research-btn").click(function () {
+            var button = $(this);
+            var researchId = button.data("researchid");
+            var duration = parseInt(button.data("duration"));
+
+            $.ajax({
+                url: '/Research/StartResearch',
+                type: 'POST',
+                data: { researchId: researchId },
+                success: function (response) {
+                    if (response.success) {
+                        // ✅ start countdown
+                        var remaining = response.duration;
+                        button.prop("disabled", true);
+
+                        var originalText = "Research";
+                        button.text(remaining + "s");
+
+                        var timer = setInterval(function () {
+                            remaining--;
+                            button.text(remaining + "s");
+
+                            if (remaining <= 0) {
+                                clearInterval(timer);
+                                button.prop("disabled", false)
+                                      .text(originalText)
+                                      .removeClass("btn-success")
+                                      .addClass("btn-secondary");
+                            }
+                        }, 1000);
+                    } else {
+                        // ❌ show toastr error
+                        toastr.error(response.message);
+                    }
+                }
+            });
+        });
+
+    </script>
+
+}

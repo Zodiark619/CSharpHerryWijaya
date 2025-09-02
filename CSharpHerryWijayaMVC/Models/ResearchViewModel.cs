@@ -2,7 +2,7 @@
 {
     public class ResearchViewModel
     {
-        public Inventory Inventory { get; set; }
-        public Research Research { get; set; }
+        public List<InventoryItem> InventoryItem { get; set; }
+        public List<Research> Research { get; set; }
     }
 }
