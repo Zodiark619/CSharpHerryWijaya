@@ -24,7 +24,7 @@ namespace CSharpHerryWijayaMVC.Controllers
         [HttpPost]
         public IActionResult IncreaseQuantity(int inventoryItemId, int amount)
         {
-            var item = dbContext.InventoryItem.FirstOrDefault(ii => ii.Id == inventoryItemId);
+            var item = dbContext.InventoryItem.Include(ii => ii.Item).FirstOrDefault(ii => ii.Id == inventoryItemId);
             if (item == null)
             {
                 return Json(new { success = false });
@@ -32,7 +32,7 @@ namespace CSharpHerryWijayaMVC.Controllers
             item.Quantity += amount;
             dbContext.SaveChanges();
 
-            return Json(new { success = true, newQuantity = item.Quantity });
+            return Json(new { success = true, newQuantity = item.Quantity,itemName=item.Item.Name ,amount=amount});
         }
     }
 }

@@ -46,6 +46,7 @@
                 .done(function (data) {
                     if (data.success) {
                         $("#qty-" + inventoryItemId).text(data.newQuantity);
+                        toastr.success(data.itemName+" successfully increased by "+data.amount+"!");
                     }
                 });
         });
