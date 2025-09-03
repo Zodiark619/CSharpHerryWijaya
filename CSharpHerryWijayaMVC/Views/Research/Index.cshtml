@@ -24,7 +24,10 @@
                                 var invItem = Model.InventoryItem.FirstOrDefault(x => x.ItemId == ii.ItemId);
                                 var currentQty = invItem?.Quantity ?? 0;  // if null, quantity = 0
 
-                                <p>@ii.Item.Name (@currentQty / @ii.Quantity)</p>
+                        <p>
+                            @ii.Item.Name (<span class="inv-qty"
+                                                 data-itemid="@ii.ItemId">@currentQty</span> / @ii.Quantity)
+                        </p>
                     }
                         </td>
                         <td>
@@ -37,19 +40,6 @@
                 </tr>
             }
 
-            @* foreach (var item in inv.Items)
-            {
-                <tr>
-                    <td>@item.Item.Name</td>
-                    <td id="qty-@item.Id">@item.Quantity</td>
-                    <td>
-                        <button class="btn btn-sm btn-success increase-btn"
-                                data-inventoryitemid="@item.Id">
-                            +50
-                        </button>
-                    </td>
-                </tr>
-            } *@
         
     </tbody>
 </table>
@@ -62,7 +52,7 @@
                 $(".research-btn").click(function () {
             var button = $(this);
             var researchId = button.data("researchid");
-            var duration = parseInt(button.data("duration"));
+          //  var duration = parseInt(button.data("duration"));
 
             $.ajax({
                 url: '/Research/StartResearch',
@@ -70,11 +60,25 @@
                 data: { researchId: researchId },
                 success: function (response) {
                     if (response.success) {
+                          // ✅ deduct inventory quantities in UI
+                if (response.deductions) {
+                    response.deductions.forEach(function (d) {
+                        // Find the span with this itemId
+                        var span = $('span.inv-qty[data-itemid="' + d.itemId + '"]');
+                        var current = parseInt(span.text());
+                        span.text(current - d.used); // update UI
+                    });
+                }
+
+                 toastr.success("Started research: " + response.researchName);
+
                         // ✅ start countdown
                         var remaining = response.duration;
-                        button.prop("disabled", true);
-
                         var originalText = "Research";
+                          button.prop("disabled", true)
+        .removeClass("btn-success")
+        .addClass("btn-secondary");
+
                         button.text(remaining + "s");
 
                         var timer = setInterval(function () {
@@ -85,10 +89,12 @@
                                 clearInterval(timer);
                                 button.prop("disabled", false)
                                       .text(originalText)
-                                      .removeClass("btn-success")
-                                      .addClass("btn-secondary");
+                                      .removeClass("btn-secondary")
+                                      .addClass("btn-success");
+                                      toastr.success("Research '" + response.researchName + "' completed!");
                             }
                         }, 1000);
+
                     } else {
                         // ❌ show toastr error
                         toastr.error(response.message);

@@ -37,7 +37,7 @@ namespace CSharpHerryWijayaMVC.Controllers
                 .Include(r => r.Requirements)
                 .ThenInclude(rr => rr.Item)
                 .FirstOrDefault(r => r.Id == researchId);
-
+            var deductions = new List<object>();
             if (research == null)
                 return Json(new { success = false, message = "Research not found." });
 
@@ -50,6 +50,7 @@ namespace CSharpHerryWijayaMVC.Controllers
             foreach (var req in research.Requirements)
             {
                 var invItem = inventoryItems.FirstOrDefault(i => i.ItemId == req.ItemId);
+                //  var currentQty = invItem?.Quantity ?? 0;
                 var currentQty = invItem?.Quantity ?? 0;
 
                 if (currentQty < req.Quantity)
@@ -69,14 +70,24 @@ namespace CSharpHerryWijayaMVC.Controllers
                 if (invItem != null)
                 {
                     invItem.Quantity -= req.Quantity;
+                    deductions.Add(new { itemId = req.ItemId, used = req.Quantity });
+
                 }
             }
+            // Deduct
+            //foreach (var req in research.Requirements)
+            //{
+            //    var invItem = inventoryItems.First(i => i.ItemId == req.ItemId);
+            //    invItem.Quantity -= req.Quantity;
 
+            //    deductions.Add(new { itemId = req.ItemId, used = req.Quantity });
+            //}
             dbContext.SaveChanges();
 
             // You could also save research progress with EndTime = DateTime.Now + research.Duration
+            var researchName = research.Name;
 
-            return Json(new { success = true, duration = research.Duration.TotalSeconds });
+            return Json(new { success = true, duration = research.Duration.TotalSeconds, deductions , researchName });
         }
 
     }
