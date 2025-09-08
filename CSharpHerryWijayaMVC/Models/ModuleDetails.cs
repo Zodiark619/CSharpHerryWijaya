@@ -7,8 +7,8 @@
         public double ValueModifier {  get; set; }
         public string ValueModifierType {  get; set; }
 
-
-
+        public int ModuleStatsId {  get; set; }
+        public ModuleStats ModuleStats { get; set; }
 
 
         public Module Module { get; set; }

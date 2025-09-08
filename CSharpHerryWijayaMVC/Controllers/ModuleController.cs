@@ -1,4 +1,5 @@
 ﻿using CSharpHerryWijayaMVC.Data;
+using CSharpHerryWijayaMVC.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,23 +15,108 @@ namespace CSharpHerryWijayaMVC.Controllers
         }
         public IActionResult Index()
         {
-            var module = dbContext.Module.Include(x=>x.Details).ToList();
-            return View(module  );
+            var modules = dbContext.Module.Include(m => m.Details).ToList();
+            var vm = new ModuleIndexViewModel { Modules = modules };
+            return View(vm);
         }
-        [HttpPost]
-        public IActionResult Add(int id)
+        public void ModuleCategoryContains()
         {
-            var module = dbContext.Module.FirstOrDefault(m => m.Id == id);
+            var moduleCategory = dbContext.ModuleCategory.ToList();
+        }
+
+        [HttpPost]
+        public IActionResult AddModule([FromBody] PersonRequest request)
+        {
+            var module = dbContext.Module
+    .Include(m => m.Details)
+    .ThenInclude(d => d.ModuleStats)
+    .FirstOrDefault(m => m.Id == request.NewModuleId);
+            var modulecategory = new List<string>();
+            var moduledictionary = new Dictionary<string, (double Value, string Type)>();
+            var existingModules = dbContext.Module
+    .Include(m => m.Details)
+    .ThenInclude(d => d.ModuleStats)
+    .Where(m => request.SelectedModules.Contains(m.Id))
+    .ToList();
             if (module == null)
-            {
                 return Json(new { success = false, message = "Module not found" });
+
+            if (request.SelectedModules.Contains(module.Id))
+                return Json(new { success = false, message = "Already selected" });
+            if (request.SelectedModules.Count() > 0)
+            {
+                var selectedModules = dbContext.Module
+    .Include(m => m.ModuleCategory)
+    .Where(m => request.SelectedModules.Contains(m.Id))
+    .ToList();
+
+                foreach (var sm in selectedModules)
+                {
+                    modulecategory.Add(sm.ModuleCategory.Name);
+                }
+               
+            }
+            if (modulecategory.Contains(module.ModuleCategory.Name))
+                return Json(new { success = false, message = "Same category" });
+            var moduledictionarySituational=new List<string>();
+            // Add module effects to Person
+            foreach (var m in existingModules.Append(module))
+            {
+                foreach (var detail in m.Details)
+                {
+                    if (moduledictionary.ContainsKey(detail.ModuleStats.Name))
+                    {
+                        // Get the existing tuple
+                        var existing = moduledictionary[detail.ModuleStats.Name];
+
+                        // Update Value, keep Type
+                        moduledictionary[detail.ModuleStats.Name] = (
+                            existing.Value + detail.ValueModifier,
+                            detail.ValueModifierType
+                        );
+                    }
+                    else
+                    {
+                        // Add new tuple
+                        if (detail.ValueModifierType == "situational") {
+                            moduledictionarySituational.Add(m.Description);
+                        }
+                        else
+                        {
+                            moduledictionary[detail.ModuleStats.Name] = (
+                                detail.ValueModifier,
+                                detail.ValueModifierType
+                            );
+                        }
+                            
+                    }
+                }
             }
 
-            // Example: add it to another table, or user’s collection
-            // dbContext.UserModules.Add(new UserModule { UserId = 1, ModuleId = id });
-            // dbContext.SaveChanges();
+             request.SelectedModules.Add(module.Id);
+           
+            var modulestatsAjax = new List<string>();
+            foreach (var i in moduledictionary)
+            {
+                if (i.Value.Type == "percentage")
+                {
+                    modulestatsAjax.Add($"{i.Key} {i.Value.Value}%");
 
-            return Json(new { success = true, name = module.Name });
+                }
+                else
+                {
+                    modulestatsAjax.Add($"{i.Key} {i.Value.Value}");
+
+                }
+            }
+            foreach(var i in moduledictionarySituational)
+            {
+                modulestatsAjax.Add(i);
+            }
+            request.Description = modulestatsAjax;
+            return Json(new { success = true, person = request });
         }
+
+
     }
 }

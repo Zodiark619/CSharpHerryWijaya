@@ -18,10 +18,73 @@ namespace CSharpHerryWijayaMVC.Data
         public DbSet<Module> Module { get; set; }
         public DbSet<ModuleDetails> ModuleDetails { get; set; }
         public DbSet<Descendant> Descendant { get; set; }
+        public DbSet<ModuleCategory> ModuleCategory { get; set; }
+        public DbSet<ModuleStats> ModuleStats { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             //module,moduledetails,descendant
+            var modulecategory=new List<ModuleCategory>()
+            {
+                new ModuleCategory
+                {
+                    Id=1,
+                    Name="None"
+                },
+                new ModuleCategory
+                {
+                    Id=2,
+                    Name="Defense"
+                },
+                new ModuleCategory
+                {
+                    Id=3,
+                    Name="Battle"
+                },
+                new ModuleCategory
+                {
+                    Id=4,
+                    Name="Support Tech"
+                },
+                new ModuleCategory
+                {
+                    Id=5,
+                    Name="Transcendent"
+                },
+            };
+            var modulestat=new List<ModuleStats>()
+            {
+                new ModuleStats
+                {
+                    Id = 1,
+                    Name="DEF"
+                },
+                new ModuleStats
+                {
+                    Id = 2,
+                    Name="Skill Effect Range"
+                },
+                new ModuleStats
+                {
+                    Id = 3,
+                    Name="Toxic Skill Power"
+                },
+                new ModuleStats
+                {
+                    Id = 4,
+                    Name="All Attribute Resistances"
+                },
+                new ModuleStats
+                {
+                    Id = 5,
+                    Name="-"
+                },
+                new ModuleStats
+                {
+                    Id = 6,
+                    Name="Max Shield"
+                },
+            };  
             var descendant=new List<Descendant>()
             {
                 new Descendant
@@ -47,7 +110,7 @@ namespace CSharpHerryWijayaMVC.Data
                     Id=1,
                     Name="Shield Conversion (DEF)",
                     Description="DEF +166.80%, Max Shield -36.50%",
-                    Category="Defense"
+                    ModuleCategoryId=2
                     ,
                     DescendantId=null,
                 },
@@ -56,7 +119,7 @@ namespace CSharpHerryWijayaMVC.Data
                     Id=2,
                     Name="Toxic Specialist",
                     Description="Toxic Skill Power +81.20%",
-                     Category="Battle"
+                     ModuleCategoryId=3
                     ,
                     DescendantId=null,
                 },
@@ -65,7 +128,7 @@ namespace CSharpHerryWijayaMVC.Data
                     Id=3,
                     Name="Polygenic Antibody",
                     Description="All Attribute Resistances +640.80",
-                    Category="-"
+                    ModuleCategoryId=1
                     ,
                     DescendantId=null,
                 },
@@ -74,7 +137,7 @@ namespace CSharpHerryWijayaMVC.Data
                     Id=4,
                     Name="An Iron Will",
                     Description="When Shield is at 0%, DEF +128.30%",
-                    Category="Support Tech"
+                     ModuleCategoryId=4
                     ,
                     DescendantId=null,
                 },
@@ -83,7 +146,7 @@ namespace CSharpHerryWijayaMVC.Data
                     Id=5,
                     Name="Contagion",
                     Description="When an enemy inflicted with Room 0 Trauma is killed, a contagion of Room 0 Trauma surrounds it.",
-                    Category="Transcendent",
+                    ModuleCategoryId=5,
                     DescendantId=1,
                 },
                 new Module
@@ -91,7 +154,7 @@ namespace CSharpHerryWijayaMVC.Data
                     Id=6,
                     Name="Arche Acceleration",
                     Description="Skill Speed & Range Increase Modifier +19.20%",
-                    Category="-",
+                   ModuleCategoryId=1,
                     DescendantId=null
 
                 },
@@ -104,7 +167,7 @@ namespace CSharpHerryWijayaMVC.Data
                     ModuleId=1,
                     ValueModifier=166.8,
                     ValueModifierType="percentage",
-
+                    ModuleStatsId=1
                 },
                 new ModuleDetails
                 {
@@ -112,6 +175,8 @@ namespace CSharpHerryWijayaMVC.Data
                     ModuleId=1,
                     ValueModifier=-36.5,
                     ValueModifierType="percentage",
+                                        ModuleStatsId=6
+
 
                 },
                 new ModuleDetails
@@ -120,6 +185,8 @@ namespace CSharpHerryWijayaMVC.Data
                     ModuleId=2,
                     ValueModifier=81.2,
                     ValueModifierType="percentage",
+                                       ModuleStatsId=3
+
 
                 },
                 new ModuleDetails
@@ -128,6 +195,8 @@ namespace CSharpHerryWijayaMVC.Data
                     ModuleId=3,
                     ValueModifier=640.8,
                     ValueModifierType="raw",
+                                        ModuleStatsId=4
+
 
                 },
                 new ModuleDetails
@@ -136,6 +205,8 @@ namespace CSharpHerryWijayaMVC.Data
                     ModuleId=4,
                     ValueModifier=0,
                     ValueModifierType="situational",
+                                       ModuleStatsId=5
+
 
                 },
                 new ModuleDetails
@@ -144,6 +215,8 @@ namespace CSharpHerryWijayaMVC.Data
                     ModuleId=5,
                     ValueModifier=0,
                     ValueModifierType="situational",
+                                        ModuleStatsId=5
+
 
                 },
                 new ModuleDetails
@@ -152,6 +225,8 @@ namespace CSharpHerryWijayaMVC.Data
                     ModuleId=6,
                     ValueModifier=19.2,
                     ValueModifierType="percentage",
+                                       ModuleStatsId=2
+
 
                 },
             };
@@ -276,6 +351,8 @@ namespace CSharpHerryWijayaMVC.Data
             modelBuilder.Entity<Module>().HasData(module);
             modelBuilder.Entity<ModuleDetails>().HasData(moduledetail);
             modelBuilder.Entity<Descendant>().HasData(descendant);
+            modelBuilder.Entity<ModuleStats>().HasData(modulestat);
+            modelBuilder.Entity<ModuleCategory>().HasData(modulecategory);
 
 
         }

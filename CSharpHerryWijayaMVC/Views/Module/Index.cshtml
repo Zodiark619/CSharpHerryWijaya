@@ -1,18 +1,13 @@
-﻿@model List<Module>
+﻿
 <h3>Selected Modules</h3>
 <ul id="selected-modules"></ul>
 <h3>Effects</h3>
 <ul id="effects"></ul>
-<table id="moduleTable" class="display">
-    <thead>
-        <tr>
-            <th>Module Name</th>
-            <th>Description</th>
-            <th></th>
-        </tr>
-    </thead>
+@model ModuleIndexViewModel
+
+<table id="moduleTable">
     <tbody>
-        @foreach (var m in Model)
+        @foreach (var m in Model.Modules)
         {
             <tr>
                 <td>@m.Name</td>
@@ -28,60 +23,31 @@
 </table>
 
 
+
 @section Scripts {
     <script>
         $(document).ready(function () {
             $('#moduleTable').DataTable();
         });
 
-             // Temporary JS array to hold selected module IDs
-        var selectedModules = [];
-             $(document).on("click", ".add-btn", function () {
-            var button = $(this);
-            var moduleId = button.data("id");
-            var moduleName = button.closest("tr").find("td:first").text();
-
-            // check if already exists
-            var index = selectedModules.indexOf(moduleId);
-
-            if (index === -1) {
-                // Add
-                selectedModules.push(moduleId);
-
-                $("#selected-modules").append(
-                    `<li data-id="${moduleId}" class="text-success">
-                        ${moduleName}
-                            
-                     </li>`
-                );
-
-                button.removeClass("btn-primary")
-                      .addClass("btn-secondary")
-                      .text("Remove");
-            } else {
-                // Already in list → Remove instead
-                selectedModules.splice(index, 1);
-
-                $(`#selected-modules li[data-id="${moduleId}"]`).remove();
-
-                button.removeClass("btn-secondary")
-                      .addClass("btn-primary")
-                      .text("Add");
+             $.ajax({
+            url: "/Modules/AddModule",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({
+                def: person.def,
+                atk: person.atk,
+                hp: person.hp,
+                selectedModules: person.modules,
+                newModuleId: moduleId
+            }),
+            success: function (res) {
+                if (res.success) {
+                    person = res.person; // replace with updated person from backend
+                    person.updateUI();
+                }
             }
         });
 
-        // Remove button inside selected list
-        $(document).on("click", ".remove-btn", function () {
-            var moduleId = $(this).data("id");
-            selectedModules = selectedModules.filter(x => x !== moduleId);
-
-            $(`#selected-modules li[data-id="${moduleId}"]`).remove();
-
-            // Reset original row button
-            $(`.add-btn[data-id="${moduleId}"]`)
-                .removeClass("btn-secondary")
-                .addClass("btn-primary")
-                .text("Add");
-        });
     </script>
 }
