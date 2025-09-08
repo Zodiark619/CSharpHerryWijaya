@@ -4,6 +4,7 @@ using CSharpHerryWijayaMVC.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CSharpHerryWijayaMVC.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250906060557_module")]
+    partial class module
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,40 +24,6 @@ namespace CSharpHerryWijayaMVC.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("CSharpHerryWijayaMVC.Models.Descendant", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Descendant");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Freyna"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Serena"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Ines"
-                        });
-                });
 
             modelBuilder.Entity("CSharpHerryWijayaMVC.Models.Inventory", b =>
                 {
@@ -219,24 +188,11 @@ namespace CSharpHerryWijayaMVC.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Category")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("DescendantId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DescendantId");
 
                     b.ToTable("Module");
 
@@ -244,44 +200,31 @@ namespace CSharpHerryWijayaMVC.Migrations
                         new
                         {
                             Id = 1,
-                            Category = "Defense",
-                            Description = "DEF +166.80%, Max Shield -36.50%",
                             Name = "Shield Conversion (DEF)"
                         },
                         new
                         {
                             Id = 2,
-                            Category = "Battle",
-                            Description = "Toxic Skill Power +81.20%",
                             Name = "Toxic Specialist"
                         },
                         new
                         {
                             Id = 3,
-                            Category = "-",
-                            Description = "All Attribute Resistances +640.80",
                             Name = "Polygenic Antibody"
                         },
                         new
                         {
                             Id = 4,
-                            Category = "Support Tech",
-                            Description = "When Shield is at 0%, DEF +128.30%",
                             Name = "An Iron Will"
                         },
                         new
                         {
                             Id = 5,
-                            Category = "Transcendent",
-                            DescendantId = 1,
-                            Description = "When an enemy inflicted with Room 0 Trauma is killed, a contagion of Room 0 Trauma surrounds it.",
                             Name = "Contagion"
                         },
                         new
                         {
                             Id = 6,
-                            Category = "-",
-                            Description = "Skill Speed & Range Increase Modifier +19.20%",
                             Name = "Arche Acceleration"
                         });
                 });
@@ -293,6 +236,10 @@ namespace CSharpHerryWijayaMVC.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ModuleId")
                         .HasColumnType("int");
@@ -314,6 +261,7 @@ namespace CSharpHerryWijayaMVC.Migrations
                         new
                         {
                             Id = 1,
+                            Description = "DEF +166.80%, Max Shield -36.50%",
                             ModuleId = 1,
                             ValueModifier = 166.80000000000001,
                             ValueModifierType = "percentage"
@@ -321,6 +269,7 @@ namespace CSharpHerryWijayaMVC.Migrations
                         new
                         {
                             Id = 2,
+                            Description = "DEF +166.80%, Max Shield -36.50%",
                             ModuleId = 1,
                             ValueModifier = -36.5,
                             ValueModifierType = "percentage"
@@ -328,6 +277,7 @@ namespace CSharpHerryWijayaMVC.Migrations
                         new
                         {
                             Id = 3,
+                            Description = "Toxic Skill Power +81.2",
                             ModuleId = 2,
                             ValueModifier = 81.200000000000003,
                             ValueModifierType = "percentage"
@@ -335,6 +285,7 @@ namespace CSharpHerryWijayaMVC.Migrations
                         new
                         {
                             Id = 4,
+                            Description = "All Attribute Resistances +640.80",
                             ModuleId = 3,
                             ValueModifier = 640.79999999999995,
                             ValueModifierType = "raw"
@@ -342,6 +293,7 @@ namespace CSharpHerryWijayaMVC.Migrations
                         new
                         {
                             Id = 5,
+                            Description = "When Shield is at 0%, DEF +128.30%",
                             ModuleId = 4,
                             ValueModifier = 0.0,
                             ValueModifierType = "situational"
@@ -349,6 +301,7 @@ namespace CSharpHerryWijayaMVC.Migrations
                         new
                         {
                             Id = 6,
+                            Description = "When an enemy inflicted with Room 0 Trauma is killed, a contagion of Room 0 Trauma surrounds it.",
                             ModuleId = 5,
                             ValueModifier = 0.0,
                             ValueModifierType = "situational"
@@ -356,6 +309,7 @@ namespace CSharpHerryWijayaMVC.Migrations
                         new
                         {
                             Id = 7,
+                            Description = "Skill Speed & Range Increase Modifier +19.20%",
                             ModuleId = 6,
                             ValueModifier = 19.199999999999999,
                             ValueModifierType = "percentage"
@@ -511,19 +465,10 @@ namespace CSharpHerryWijayaMVC.Migrations
                     b.Navigation("Item");
                 });
 
-            modelBuilder.Entity("CSharpHerryWijayaMVC.Models.Module", b =>
-                {
-                    b.HasOne("CSharpHerryWijayaMVC.Models.Descendant", "Descendant")
-                        .WithMany()
-                        .HasForeignKey("DescendantId");
-
-                    b.Navigation("Descendant");
-                });
-
             modelBuilder.Entity("CSharpHerryWijayaMVC.Models.ModuleDetails", b =>
                 {
                     b.HasOne("CSharpHerryWijayaMVC.Models.Module", "Module")
-                        .WithMany("Details")
+                        .WithMany()
                         .HasForeignKey("ModuleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -553,11 +498,6 @@ namespace CSharpHerryWijayaMVC.Migrations
             modelBuilder.Entity("CSharpHerryWijayaMVC.Models.Inventory", b =>
                 {
                     b.Navigation("Items");
-                });
-
-            modelBuilder.Entity("CSharpHerryWijayaMVC.Models.Module", b =>
-                {
-                    b.Navigation("Details");
                 });
 
             modelBuilder.Entity("CSharpHerryWijayaMVC.Models.Research", b =>

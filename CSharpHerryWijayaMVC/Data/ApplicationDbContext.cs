@@ -15,9 +15,146 @@ namespace CSharpHerryWijayaMVC.Data
 
         public DbSet<Inventory> Inventory { get; set; }
         public DbSet<InventoryItem> InventoryItem { get; set; }
+        public DbSet<Module> Module { get; set; }
+        public DbSet<ModuleDetails> ModuleDetails { get; set; }
+        public DbSet<Descendant> Descendant { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            //module,moduledetails,descendant
+            var descendant=new List<Descendant>()
+            {
+                new Descendant
+                {
+                    Id = 1,
+                    Name="Freyna"
+                },
+                new Descendant
+                {
+                    Id = 2,
+                    Name="Serena"
+                },
+                new Descendant
+                {
+                    Id = 3,
+                    Name="Ines"
+                },
+            };
+            var module=new List<Module>()
+            {
+                new Module
+                {
+                    Id=1,
+                    Name="Shield Conversion (DEF)",
+                    Description="DEF +166.80%, Max Shield -36.50%",
+                    Category="Defense"
+                    ,
+                    DescendantId=null,
+                },
+                new Module
+                {
+                    Id=2,
+                    Name="Toxic Specialist",
+                    Description="Toxic Skill Power +81.20%",
+                     Category="Battle"
+                    ,
+                    DescendantId=null,
+                },
+                new Module
+                {
+                    Id=3,
+                    Name="Polygenic Antibody",
+                    Description="All Attribute Resistances +640.80",
+                    Category="-"
+                    ,
+                    DescendantId=null,
+                },
+                new Module
+                {
+                    Id=4,
+                    Name="An Iron Will",
+                    Description="When Shield is at 0%, DEF +128.30%",
+                    Category="Support Tech"
+                    ,
+                    DescendantId=null,
+                },
+                new Module
+                {
+                    Id=5,
+                    Name="Contagion",
+                    Description="When an enemy inflicted with Room 0 Trauma is killed, a contagion of Room 0 Trauma surrounds it.",
+                    Category="Transcendent",
+                    DescendantId=1,
+                },
+                new Module
+                {
+                    Id=6,
+                    Name="Arche Acceleration",
+                    Description="Skill Speed & Range Increase Modifier +19.20%",
+                    Category="-",
+                    DescendantId=null
+
+                },
+            };
+            var moduledetail = new List<ModuleDetails>()
+            {
+                new ModuleDetails
+                {
+                    Id=1,
+                    ModuleId=1,
+                    ValueModifier=166.8,
+                    ValueModifierType="percentage",
+
+                },
+                new ModuleDetails
+                {
+                    Id=2,
+                    ModuleId=1,
+                    ValueModifier=-36.5,
+                    ValueModifierType="percentage",
+
+                },
+                new ModuleDetails
+                {
+                    Id=3,
+                    ModuleId=2,
+                    ValueModifier=81.2,
+                    ValueModifierType="percentage",
+
+                },
+                new ModuleDetails
+                {
+                    Id=4,
+                    ModuleId=3,
+                    ValueModifier=640.8,
+                    ValueModifierType="raw",
+
+                },
+                new ModuleDetails
+                {
+                    Id=5,
+                    ModuleId=4,
+                    ValueModifier=0,
+                    ValueModifierType="situational",
+
+                },
+                new ModuleDetails
+                {
+                    Id=6,
+                    ModuleId=5,
+                    ValueModifier=0,
+                    ValueModifierType="situational",
+
+                },
+                new ModuleDetails
+                {
+                    Id=7,
+                    ModuleId=6,
+                    ValueModifier=19.2,
+                    ValueModifierType="percentage",
+
+                },
+            };
             //inventory,inventoryitem
             var inventoryitem=new List<InventoryItem>()
             {
@@ -136,6 +273,9 @@ namespace CSharpHerryWijayaMVC.Data
             modelBuilder.Entity<ResearchRequirement>().HasData(researchRequirement);
             modelBuilder.Entity<Inventory>().HasData(inventory);
             modelBuilder.Entity<InventoryItem>().HasData(inventoryitem);
+            modelBuilder.Entity<Module>().HasData(module);
+            modelBuilder.Entity<ModuleDetails>().HasData(moduledetail);
+            modelBuilder.Entity<Descendant>().HasData(descendant);
 
 
         }
