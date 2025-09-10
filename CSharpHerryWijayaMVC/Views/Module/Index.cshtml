@@ -1,11 +1,18 @@
-﻿
+﻿@model ModuleIndexViewModel
+
 <h3>Selected Modules</h3>
 <ul id="selected-modules"></ul>
 <h3>Effects</h3>
 <ul id="effects"></ul>
-@model ModuleIndexViewModel
 
 <table id="moduleTable">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Action</th>
+        </tr>
+    </thead>
     <tbody>
         @foreach (var m in Model.Modules)
         {
@@ -13,7 +20,7 @@
                 <td>@m.Name</td>
                 <td>@m.Description</td>
                 <td>
-                    <button class="btn btn-primary add-btn" data-id="@m.Id">
+                    <button class="btn btn-primary add-btn" data-id="@m.Id" data-name="@m.Name">
                         Add
                     </button>
                 </td>
@@ -23,31 +30,117 @@
 </table>
 
 
-
 @section Scripts {
     <script>
+        let selectedModules = [];
+
+        // Initialize DataTable
         $(document).ready(function () {
             $('#moduleTable').DataTable();
         });
 
-             $.ajax({
-            url: "/Modules/AddModule",
-            type: "POST",
-            contentType: "application/json",
-            data: JSON.stringify({
-                def: person.def,
-                atk: person.atk,
-                hp: person.hp,
-                selectedModules: person.modules,
-                newModuleId: moduleId
-            }),
-            success: function (res) {
-                if (res.success) {
-                    person = res.person; // replace with updated person from backend
-                    person.updateUI();
+        // Add/Remove toggle with AJAX
+        $(document).on('click', '.add-btn', function () {
+            let btn = $(this);
+            let moduleId = btn.data('id');
+
+            // Determine action
+            let isAdd = btn.hasClass('btn-primary'); // true if Add, false if Remove
+
+            $.ajax({
+                url: '@Url.Action("AddModule", "Module")',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    newModuleId: moduleId,
+                    selectedModules: selectedModules,
+                    isAdd: isAdd
+                }),
+                success: function (response) {
+                    if (response.success) {
+                        // ✅ Replace frontend state with backend state
+                        selectedModules = response.person.selectedModules;
+
+                        // Update Selected Modules (names from backend)
+                        $('#selected-modules').empty();
+                        response.person.selectedModulesAjax.forEach(name => {
+                            $('#selected-modules').append(`<li>${name}</li>`);
+                        });
+
+                        // Update Effects (from backend)
+                        $('#effects').empty();
+                        response.person.effectsAjax.forEach(effect => {
+                            $('#effects').append(`<li>${effect}</li>`);
+                        });
+
+                        // Toggle buttons based on current state
+                        $('.add-btn').each(function () {
+                            let b = $(this);
+                            let id = b.data('id');
+                            if (selectedModules.includes(id)) {
+                                b.removeClass('btn-primary')
+                                 .addClass('btn-outline-danger')
+                                 .text('Remove');
+                            } else {
+                                b.removeClass('btn-outline-danger')
+                                 .addClass('btn-primary')
+                                 .text('Add');
+                            }
+                        });
+                    } else {
+                        alert(response.message);
+                    }
                 }
-            }
+            });
+        });
+    </script>
+
+
+
+}
+
+
+
+@* 
+@section Scripts {
+    <script>
+        // DataTable initialization
+        $(document).ready(function () {
+            $('#moduleTable').DataTable();
         });
 
+
+
+        // Add/Remove button toggle
+        $(document).on('click', '.add-btn', function () {
+            let btn = $(this);
+            let moduleName = btn.data('name');
+            let moduleId = btn.data('id');
+
+            // If not yet selected -> Add
+            if (btn.hasClass('btn-primary')) {
+                // Append li
+                $('#selected-modules').append(
+                    `<li data-id="${moduleId}">${moduleName}</li>`
+                );
+
+                // Change button to Remove
+                btn.removeClass('btn-primary')
+                   .addClass('btn-outline-danger')
+                   .text('Remove');
+            }
+            // If already selected -> Remove
+            else {
+                // Remove li
+                $('#selected-modules li[data-id="' + moduleId + '"]').remove();
+
+                // Change button back to Add
+                btn.removeClass('btn-outline-danger')
+                   .addClass('btn-primary')
+                   .text('Add');
+            }
+        });
     </script>
+
 }
+ *@
